@@ -1,2 +1,2 @@
 # axinom
-axinom test
+axinom test.
