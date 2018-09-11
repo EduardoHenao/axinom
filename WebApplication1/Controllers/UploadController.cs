@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace WebApplication1.Controllers
@@ -15,11 +17,19 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        public IActionResult UploadZip(IFormFile file)
+        public async Task<IActionResult> UploadFile(IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
                 log("the file is empty.");
+            }
+
+            //get a new file path
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", Path.GetRandomFileName());
+
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
             }
 
             log("Upload completed");

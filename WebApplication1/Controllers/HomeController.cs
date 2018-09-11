@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
@@ -13,11 +14,16 @@ namespace WebApplication1.Controllers
             _Factory = loggerFactory;
         }
 
-        [HttpGet]
         public IActionResult Index()
         {
             log("Home : Index");
             return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         public void log(string text)
