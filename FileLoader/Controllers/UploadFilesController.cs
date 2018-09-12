@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using FileLoader.Business;
+using Newtonsoft.Json;
 
 namespace FileLoader.Controllers
 {
@@ -29,8 +30,11 @@ namespace FileLoader.Controllers
                 if (storedFile.IsStored)
                 {
                     NodeCollection nodes = _zipServices.GetFileAndFolderStructureAsync(storedFile.FileName);
+                    string destinyPath = _fileManagementServices.GetFilesPath();
+                    JsonNode root = nodes.GenerateJsonObject(_encryptionServices, destinyPath);
+                    string json = JsonConvert.SerializeObject(root);
 
-                    return Ok(nodes);
+                    return Ok(json);
                 }
             }
 

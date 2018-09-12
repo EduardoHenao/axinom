@@ -18,7 +18,7 @@ namespace FileLoader.Services
 
         public async Task<FileManagementResult> StoreFilesAsync(IFormFile file)
         {
-            string destinyPath = Path.Combine(rootFolder, storageFolder);
+            string destinyPath = GetFilesPath();
             string treatmentDate = DateTime.UtcNow.ToString("yyyyMMdd-Hmmss");
 
             FileManagementResult newFile = new FileManagementResult()
@@ -38,11 +38,16 @@ namespace FileLoader.Services
 
             return newFile;
         }
+        public string GetFilesPath()
+        {
+            return Path.Combine(rootFolder, storageFolder);
+        }
     }
 
     public interface IFileManagementServices
     {
         Task<FileManagementResult> StoreFilesAsync(IFormFile file);
+        string GetFilesPath();
     }
 
     public class FileManagementResult

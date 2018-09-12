@@ -8,11 +8,12 @@ namespace FileLoader.Services
     public class EncryptionServices : IEncryptionServices
     {
         private readonly byte[] _encriptionKey;
+        private const string defaultKey = "001C2233A455667C";
 
         public EncryptionServices(IConfiguration configuration)
         {
             var confKey = configuration["EncryptionKey"];
-            string encriptionKeyAsString = string.IsNullOrEmpty(confKey) ? "default key" : confKey; // if  not in conf, defautl 'default key'
+            string encriptionKeyAsString = string.IsNullOrEmpty(confKey) ? defaultKey : confKey; // if  not in conf, defautl 'default key'
             _encriptionKey = System.Text.Encoding.UTF8.GetBytes(encriptionKeyAsString);
         }
 
@@ -25,7 +26,7 @@ namespace FileLoader.Services
             using (Aes aes = Aes.Create())
             {
                 aes.Key = _encriptionKey;
-                aes.Mode = CipherMode.CBC;
+                aes.Mode = CipherMode.ECB;
 
                 aes.GenerateIV();
                 IV = aes.IV;// store initialization vector
@@ -51,6 +52,39 @@ namespace FileLoader.Services
 
             return System.Text.Encoding.UTF8.GetString(combinedIvCt);
         }
+        public string EncryptToString(byte[] bytes)
+        {
+            byte[] encrypted;
+            byte[] IV; // initialization vector
+            byte[] combinedIvCt;
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = _encriptionKey;
+                aes.Mode = CipherMode.ECB;
+
+                aes.GenerateIV();
+                IV = aes.IV;// store initialization vector
+
+                ICryptoTransform encryptor = aes.CreateEncryptor();
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
+                    {
+                        cryptoStream.Write(bytes, 0, bytes.Length);
+                        encrypted = memoryStream.ToArray();
+                    }
+                }
+
+                combinedIvCt = new byte[IV.Length + encrypted.Length];
+                Array.Copy(IV, 0, combinedIvCt, 0, IV.Length);
+                Array.Copy(encrypted, 0, combinedIvCt, IV.Length, encrypted.Length);
+            }
+
+            return System.Text.Encoding.UTF8.GetString(combinedIvCt);
+        }
+
 
         public string DecryptToString(string encryptedText)
         {
@@ -60,7 +94,7 @@ namespace FileLoader.Services
             using (Aes aes = Aes.Create())
             {
                 aes.Key = _encriptionKey;
-                aes.Mode = CipherMode.CBC;
+                aes.Mode = CipherMode.ECB;
 
                 byte[] IV = new byte[aes.BlockSize / 8];
                 byte[] cipherText = new byte[encryptedTextAsArray.Length - IV.Length];
@@ -91,6 +125,7 @@ namespace FileLoader.Services
     public interface IEncryptionServices
     {
         string EncryptToString(string plainText);
+        string EncryptToString(byte[] bytes);
         string DecryptToString(string encryptedText);
     }
 }

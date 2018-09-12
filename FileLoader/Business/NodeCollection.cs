@@ -1,23 +1,23 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using FileLoader.Services;
 
 namespace FileLoader.Business
 {
     public class NodeCollection : Dictionary<string, Node>
     {
+        private readonly string bslash = "\\";
+
         public void AddEntry(string entry, int beginIndex)
         {
             if (beginIndex < entry.Length)
             {
-                string name;
-                int endIndex;
-
-                endIndex = entry.IndexOf("/", beginIndex);
+                int endIndex = entry.IndexOf("/", beginIndex);
                 if (endIndex == -1)
                 {
                     endIndex = entry.Length;
                 }
-                name = entry.Substring(beginIndex, endIndex - beginIndex);
+                string name = entry.Substring(beginIndex, endIndex - beginIndex);
                 if (!string.IsNullOrEmpty(name))
                 {
                     Node item;
@@ -38,15 +38,33 @@ namespace FileLoader.Business
             }
         }
 
-        public string GenerateJson(IEncryptionServices encryptionServices)
+        public JsonNode GenerateJsonObject(IEncryptionServices encryptionServices, string filePath)
         {
-            string result = string.Empty;
-            foreach (var key in Keys)
-            {
-                var value = this[key];
-            }
+            JsonNode root = new JsonNode();
+            GenerateJsonObjectRecursive(root, filePath, this, encryptionServices, bslash);
+            return root;
+        }
 
-            return result;
+        private void GenerateJsonObjectRecursive(JsonNode jsonNode, string filePath, NodeCollection nodeCollection, IEncryptionServices encryptionServices, string accumulatedPath)
+        {
+            foreach (KeyValuePair<string, Node> keyValuePair in nodeCollection)
+            {
+                if (keyValuePair.Value.Children.Count == 0) //is a file
+                {
+                    string fullFilePath = $"{filePath}{accumulatedPath}{keyValuePair.Key}";
+                    byte[] array = File.ReadAllBytes(fullFilePath);
+                    jsonNode.children.Add(new JsonNode(
+                        name: encryptionServices.EncryptToString(keyValuePair.Key), 
+                        isFile: true,
+                        file: encryptionServices.EncryptToString(array) ));
+                }
+                else
+                {
+                    var dirNode = new JsonNode(name: encryptionServices.EncryptToString(keyValuePair.Key));
+                    jsonNode.children.Add(dirNode);
+                    GenerateJsonObjectRecursive(dirNode, filePath, keyValuePair.Value.Children, encryptionServices, $"{accumulatedPath}{keyValuePair.Key}{bslash}");
+                }
+            }
         }
     }
 }
