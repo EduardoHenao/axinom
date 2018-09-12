@@ -25,7 +25,17 @@ namespace FileLoader.Controllers
         {
             if (formFile != null)
             {
+                //ensure store directory
+                _fileManagementServices.EnsureStoreDirectory();
+
+                //delete zip files directory and recreate
+                _fileManagementServices.EnsureUnzipDirectory();
+
+                //zip storage
                 FileManagementResult storedFile = await _fileManagementServices.StoreFilesAsync(formFile);
+
+                //unzip file into zip directory
+                _zipServices.UnzipFiles(storedFile, _fileManagementServices.GetUnzipPath());
 
                 if (storedFile.IsStored)
                 {

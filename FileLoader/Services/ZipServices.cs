@@ -23,10 +23,24 @@ namespace FileLoader.Services
 
             return nodeCollection;
         }
+
+        public void UnzipFiles(FileManagementResult fileManagementResult, string destinationPath)
+        {
+
+            using (ZipArchive zipFile = ZipFile.OpenRead(fileManagementResult.FileName))
+            {
+                foreach (ZipArchiveEntry entry in zipFile.Entries)
+                {
+                    entry.ExtractToFile(destinationPath);
+                }
+            }
+        }
+
     }
 
     public interface IZipServices
     {
+        void UnzipFiles(FileManagementResult fileManagementResult, string destinationPath);
         NodeCollection GetFileAndFolderStructureAsync(string filePath);
     }
 }
