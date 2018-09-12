@@ -23,7 +23,7 @@ namespace FileLoader.Services
 
             FileManagementResult newFile = new FileManagementResult()
             {
-                FileName = Path.Combine(destinyPath, $"{file.Name}_{treatmentDate}.zip"),
+                FileName = Path.Combine(destinyPath, $"{file.FileName}_{treatmentDate}.zip"),
                 Length = file.Length
             };
 

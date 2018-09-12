@@ -7,39 +7,40 @@ namespace FileLoader.Services
 {
     public class EncryptionServices : IEncryptionServices
     {
-        private readonly byte[] encriptionKey;
+        private readonly byte[] _encriptionKey;
 
         public EncryptionServices(IConfiguration configuration)
         {
-            string encriptionKeyAsString = string.IsNullOrEmpty(configuration["EncryptionKey"]) ? "default key" : configuration["EncryptionKey"];
-            encriptionKey = System.Text.Encoding.UTF8.GetBytes(encriptionKeyAsString);
+            var confKey = configuration["EncryptionKey"];
+            string encriptionKeyAsString = string.IsNullOrEmpty(confKey) ? "default key" : confKey; // if  not in conf, defautl 'default key'
+            _encriptionKey = System.Text.Encoding.UTF8.GetBytes(encriptionKeyAsString);
         }
 
         public string EncryptToString(string plainText)
         {
             byte[] encrypted;
-            byte[] IV;
+            byte[] IV; // initialization vector
             byte[] combinedIvCt;
 
             using (Aes aes = Aes.Create())
             {
-                aes.Key = encriptionKey;
+                aes.Key = _encriptionKey;
                 aes.Mode = CipherMode.CBC;
 
                 aes.GenerateIV();
-                IV = aes.IV;
+                IV = aes.IV;// store initialization vector
 
                 ICryptoTransform encryptor = aes.CreateEncryptor();
 
-                using (var msEncrypt = new MemoryStream())
+                using (var memoryStream = new MemoryStream())
                 {
-                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
                     {
-                        using (var swEncrypt = new StreamWriter(csEncrypt))
+                        using (var streamWriter = new StreamWriter(cryptoStream))
                         {
-                            swEncrypt.Write(plainText);
+                            streamWriter.Write(plainText);
                         }
-                        encrypted = msEncrypt.ToArray();
+                        encrypted = memoryStream.ToArray();
                     }
                 }
 
@@ -58,7 +59,7 @@ namespace FileLoader.Services
 
             using (Aes aes = Aes.Create())
             {
-                aes.Key = encriptionKey;
+                aes.Key = _encriptionKey;
                 aes.Mode = CipherMode.CBC;
 
                 byte[] IV = new byte[aes.BlockSize / 8];
