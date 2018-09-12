@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using FileLoader.Business;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -101,12 +102,5 @@ namespace FileLoader.Services
         string GetFileSeparator();
         void EnsureStoreDirectory();
         void EnsureUnzipDirectory();
-    }
-
-    public class FileManagementResult
-    {
-        public long Length { get; set; } = 0;
-        public bool IsStored { get; set; } = false;
-        public string FileName { get; set; }
     }
 }
