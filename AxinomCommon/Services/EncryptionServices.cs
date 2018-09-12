@@ -1,10 +1,10 @@
-﻿using FileLoader.IServices;
+﻿using AxinomCommon.IServices;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Security.Cryptography;
 
-namespace FileLoader.Services
+namespace AxinomCommon.Services
 {
     public class EncryptionServices : IEncryptionServices
     {

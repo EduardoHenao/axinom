@@ -17,4 +17,8 @@
     <Folder Include="_uploadedFiles\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AxinomCommon\AxinomCommon.csproj" />
+  </ItemGroup>
+
 </Project>

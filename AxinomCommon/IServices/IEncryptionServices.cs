@@ -1,4 +1,4 @@
-﻿namespace FileLoader.IServices
+﻿namespace AxinomCommon.IServices
 {
     public interface IEncryptionServices
     {
