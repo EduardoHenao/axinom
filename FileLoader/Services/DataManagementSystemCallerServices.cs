@@ -11,12 +11,11 @@ namespace FileLoader.Services
 {
     public class DataManagementSystemCallerServices : IDataManagementSystemCallerServices
     {
-        private const string requestUri = "api/receive";
         private HttpClient client = new HttpClient();
 
         public DataManagementSystemCallerServices()
         {
-            client.BaseAddress = new System.Uri("http://localhost:9999");
+            client.BaseAddress = new System.Uri("http://localhost:5000");
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
         }
@@ -26,7 +25,7 @@ namespace FileLoader.Services
             await Task.Delay(500); // delay 500 ms for cancelation token to work
             CancellationToken.None.ThrowIfCancellationRequested();
 
-            HttpResponseMessage response = await client.PostAsync(requestUri, new StringContent(jsonString, Encoding.UTF8, "application/json"));
+            HttpResponseMessage response = await client.PostAsync("api/receive", new StringContent(jsonString, Encoding.UTF8, "application/json"));
             if (!response.IsSuccessStatusCode) return false;
 
             var stringResult = await response.Content.ReadAsStringAsync();

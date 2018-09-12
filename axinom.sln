@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileLoader", "FileLoader\FileLoader.csproj", "{C4E6AF94-9DA6-44A1-B9AF-1C994539E1C6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataManagementSystem", "DataManagementSystem\DataManagementSystem.csproj", "{49CE0B92-B108-417E-A50E-74CBC8C57249}"
-	ProjectSection(ProjectDependencies) = postProject
-		{C4E6AF94-9DA6-44A1-B9AF-1C994539E1C6} = {C4E6AF94-9DA6-44A1-B9AF-1C994539E1C6}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
