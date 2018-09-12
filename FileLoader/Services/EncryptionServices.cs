@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using FileLoader.IServices;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -120,12 +121,5 @@ namespace FileLoader.Services
 
             return plaintext;
         }
-    }
-
-    public interface IEncryptionServices
-    {
-        string EncryptToString(string plainText);
-        string EncryptToString(byte[] bytes);
-        string DecryptToString(string encryptedText);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.IO.Compression;
 using FileLoader.Business;
+using FileLoader.IServices;
 
 namespace FileLoader.Services
 {
@@ -54,11 +55,5 @@ namespace FileLoader.Services
             return fullPath.Replace("/", "\\");
         }
 
-    }
-
-    public interface IZipServices
-    {
-        void UnzipFiles(FileManagementResult fileManagementResult, string destinationPath, string fileSeparator);
-        NodeCollection GetFileAndFolderStructureAsync(string filePath);
     }
 }

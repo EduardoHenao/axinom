@@ -1,4 +1,5 @@
 ﻿using FileLoader.Business;
+using FileLoader.IServices;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -91,16 +92,5 @@ namespace FileLoader.Services
             if (Directory.Exists(path)) Directory.Delete(path, true); // recursively delete directory
             Directory.CreateDirectory(path);
         }
-
-    }
-
-    public interface IFileManagementServices
-    {
-        Task<FileManagementResult> StoreFilesAsync(IFormFile file);
-        string GetFilesPath();
-        string GetUnzipPath();
-        string GetFileSeparator();
-        void EnsureStoreDirectory();
-        void EnsureUnzipDirectory();
     }
 }

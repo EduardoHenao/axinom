@@ -1,10 +1,10 @@
-﻿using FileLoader.Services;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using FileLoader.Business;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
+using FileLoader.IServices;
 
 namespace FileLoader.Controllers
 {
@@ -13,12 +13,19 @@ namespace FileLoader.Controllers
         private readonly IFileManagementServices _fileManagementServices;
         private readonly IZipServices _zipServices;
         private readonly IEncryptionServices _encryptionServices;
+        private readonly IDataManagementSystemCallerServices _dataManagementSystemCallerServices;
 
-        public UploadFilesController(IConfiguration configuration, IFileManagementServices fileManagementServices, IZipServices zipServices, IEncryptionServices encryptionServices)
+        public UploadFilesController(
+            IConfiguration configuration, 
+            IFileManagementServices fileManagementServices, 
+            IZipServices zipServices, 
+            IEncryptionServices encryptionServices,
+            IDataManagementSystemCallerServices dataManagementSystemCallerServices)
         {
             _fileManagementServices = fileManagementServices;
             _zipServices = zipServices;
             _encryptionServices = encryptionServices;
+            _dataManagementSystemCallerServices = dataManagementSystemCallerServices;
         }
 
         [HttpPost("UploadFiles")]
@@ -48,9 +55,11 @@ namespace FileLoader.Controllers
                         _encryptionServices, 
                         _fileManagementServices.GetUnzipPath(), 
                         _fileManagementServices.GetFileSeparator());
-                    string json = JsonConvert.SerializeObject(root);
+                    string jsonString = JsonConvert.SerializeObject(root);
 
-                    return Ok(json);
+                    var result = await _dataManagementSystemCallerServices.PostAsync(jsonString);
+
+                    return Ok(jsonString);
                 }
             }
 
