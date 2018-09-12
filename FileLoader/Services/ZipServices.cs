@@ -1,4 +1,5 @@
-﻿using System.IO.Compression;
+﻿using System.IO;
+using System.IO.Compression;
 using FileLoader.Business;
 
 namespace FileLoader.Services
@@ -24,23 +25,40 @@ namespace FileLoader.Services
             return nodeCollection;
         }
 
-        public void UnzipFiles(FileManagementResult fileManagementResult, string destinationPath)
+        public void UnzipFiles(FileManagementResult fileManagementResult, string destinationPath, string fileSeparator)
         {
 
             using (ZipArchive zipFile = ZipFile.OpenRead(fileManagementResult.FileName))
             {
                 foreach (ZipArchiveEntry entry in zipFile.Entries)
                 {
-                    entry.ExtractToFile(destinationPath);
+                    var filePath = $"{destinationPath}{fileSeparator}{CorrectFileSeparator(entry.FullName, fileSeparator)}";
+                    var lastIndexOfFileSeparator = filePath.LastIndexOf(fileSeparator);
+                    if (lastIndexOfFileSeparator != -1)
+                    {
+                        var folderPath = filePath.Substring(0, lastIndexOfFileSeparator);
+                        Directory.CreateDirectory(folderPath);
+                    }
+                    entry.ExtractToFile(filePath);
                 }
             }
+        }
+
+        private string CorrectFileSeparator(string fullPath, string fileSeparator)
+        {
+            if (fileSeparator == "/")
+            {
+                return fullPath.Replace("\\", "/");
+            }
+
+            return fullPath.Replace("/", "\\");
         }
 
     }
 
     public interface IZipServices
     {
-        void UnzipFiles(FileManagementResult fileManagementResult, string destinationPath);
+        void UnzipFiles(FileManagementResult fileManagementResult, string destinationPath, string fileSeparator);
         NodeCollection GetFileAndFolderStructureAsync(string filePath);
     }
 }

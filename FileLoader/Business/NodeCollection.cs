@@ -6,8 +6,6 @@ namespace FileLoader.Business
 {
     public class NodeCollection : Dictionary<string, Node>
     {
-        private readonly string bslash = "\\";
-
         public void AddEntry(string entry, int beginIndex)
         {
             if (beginIndex < entry.Length)
@@ -38,14 +36,14 @@ namespace FileLoader.Business
             }
         }
 
-        public JsonNode GenerateJsonObject(IEncryptionServices encryptionServices, string filePath)
+        public JsonNode GenerateJsonObject(IEncryptionServices encryptionServices, string filePath, string pathSeparator)
         {
             JsonNode root = new JsonNode();
-            GenerateJsonObjectRecursive(root, filePath, this, encryptionServices, bslash);
+            GenerateJsonObjectRecursive(root, filePath, this, encryptionServices, pathSeparator, pathSeparator);
             return root;
         }
 
-        private void GenerateJsonObjectRecursive(JsonNode jsonNode, string filePath, NodeCollection nodeCollection, IEncryptionServices encryptionServices, string accumulatedPath)
+        private void GenerateJsonObjectRecursive(JsonNode jsonNode, string filePath, NodeCollection nodeCollection, IEncryptionServices encryptionServices, string accumulatedPath, string pathSeparator)
         {
             foreach (KeyValuePair<string, Node> keyValuePair in nodeCollection)
             {
@@ -58,11 +56,11 @@ namespace FileLoader.Business
                         isFile: true,
                         file: encryptionServices.EncryptToString(array) ));
                 }
-                else
+                else // is  a folder
                 {
                     var dirNode = new JsonNode(name: encryptionServices.EncryptToString(keyValuePair.Key));
                     jsonNode.children.Add(dirNode);
-                    GenerateJsonObjectRecursive(dirNode, filePath, keyValuePair.Value.Children, encryptionServices, $"{accumulatedPath}{keyValuePair.Key}{bslash}");
+                    GenerateJsonObjectRecursive(dirNode, filePath, keyValuePair.Value.Children, encryptionServices, $"{accumulatedPath}{keyValuePair.Key}{pathSeparator}", pathSeparator);
                 }
             }
         }

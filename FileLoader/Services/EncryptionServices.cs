@@ -8,12 +8,12 @@ namespace FileLoader.Services
     public class EncryptionServices : IEncryptionServices
     {
         private readonly byte[] _encriptionKey;
-        private const string defaultKey = "001C2233A455667C";
+        private const string _defaultEncriptionKey = "001C2233A455667C";
 
         public EncryptionServices(IConfiguration configuration)
         {
             var confKey = configuration["EncryptionKey"];
-            string encriptionKeyAsString = string.IsNullOrEmpty(confKey) ? defaultKey : confKey; // if  not in conf, defautl 'default key'
+            string encriptionKeyAsString = string.IsNullOrEmpty(confKey) ? _defaultEncriptionKey : confKey; // if  not in conf, defautl 'default key'
             _encriptionKey = System.Text.Encoding.UTF8.GetBytes(encriptionKeyAsString);
         }
 

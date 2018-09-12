@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using FileLoader.Business;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace FileLoader.Controllers
 {
@@ -13,7 +14,7 @@ namespace FileLoader.Controllers
         private readonly IZipServices _zipServices;
         private readonly IEncryptionServices _encryptionServices;
 
-        public UploadFilesController(IFileManagementServices fileManagementServices, IZipServices zipServices, IEncryptionServices encryptionServices)
+        public UploadFilesController(IConfiguration configuration, IFileManagementServices fileManagementServices, IZipServices zipServices, IEncryptionServices encryptionServices)
         {
             _fileManagementServices = fileManagementServices;
             _zipServices = zipServices;
@@ -35,13 +36,18 @@ namespace FileLoader.Controllers
                 FileManagementResult storedFile = await _fileManagementServices.StoreFilesAsync(formFile);
 
                 //unzip file into zip directory
-                _zipServices.UnzipFiles(storedFile, _fileManagementServices.GetUnzipPath());
+                _zipServices.UnzipFiles(
+                    storedFile, 
+                    _fileManagementServices.GetUnzipPath(), 
+                    _fileManagementServices.GetFileSeparator());
 
                 if (storedFile.IsStored)
                 {
                     NodeCollection nodes = _zipServices.GetFileAndFolderStructureAsync(storedFile.FileName);
-                    string destinyPath = _fileManagementServices.GetFilesPath();
-                    JsonNode root = nodes.GenerateJsonObject(_encryptionServices, destinyPath);
+                    JsonNode root = nodes.GenerateJsonObject(
+                        _encryptionServices, 
+                        _fileManagementServices.GetUnzipPath(), 
+                        _fileManagementServices.GetFileSeparator());
                     string json = JsonConvert.SerializeObject(root);
 
                     return Ok(json);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -9,11 +10,30 @@ namespace FileLoader.Services
     public class FileManagementServices : IFileManagementServices
     {
         private string rootFolder;
-        private readonly string storageFolder = "_uploadedFiles";
-        private readonly string unzipFolder = "_unzippedFiles";
 
-        public FileManagementServices(IHostingEnvironment env)
+        private readonly string _storageFolder;
+        private const string _defaultStorageFolder = "_uploadedFiles";
+
+        private readonly string _unzipFolder;
+        private const string _defaultUnzipFolder = "_unzippedFiles";
+
+        private readonly string _fileSeparator;
+        private const string _defaultFileSeparator = "\\";
+
+        public FileManagementServices(IHostingEnvironment env, IConfiguration configuration)
         {
+            //file separator
+            var fileSeparator = configuration["FileSeparator"];
+            _fileSeparator = string.IsNullOrEmpty(fileSeparator) ? _defaultFileSeparator : fileSeparator; // if  not in conf, defautl 'default key'
+
+            //uploaded files directory
+            var storageFolder = configuration["StorageFolder"];
+            _storageFolder = string.IsNullOrEmpty(storageFolder) ? _defaultStorageFolder : storageFolder;
+
+            //unzip files directory
+            var unzipFolder = configuration["UnzipFolder"];
+            _unzipFolder = string.IsNullOrEmpty(unzipFolder) ? _defaultUnzipFolder : unzipFolder;
+
             rootFolder = env.ContentRootPath;
         }
 
@@ -42,12 +62,17 @@ namespace FileLoader.Services
 
         public string GetFilesPath()
         {
-            return Path.Combine(rootFolder, storageFolder);
+            return Path.Combine(rootFolder, _storageFolder);
         }
 
         public string GetUnzipPath()
         {
-            return Path.Combine(rootFolder, unzipFolder);
+            return Path.Combine(rootFolder, _unzipFolder);
+        }
+
+        public string GetFileSeparator()
+        {
+            return _fileSeparator;
         }
 
         public void EnsureStoreDirectory()
@@ -73,6 +98,7 @@ namespace FileLoader.Services
         Task<FileManagementResult> StoreFilesAsync(IFormFile file);
         string GetFilesPath();
         string GetUnzipPath();
+        string GetFileSeparator();
         void EnsureStoreDirectory();
         void EnsureUnzipDirectory();
     }
