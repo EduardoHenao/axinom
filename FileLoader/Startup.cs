@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AxinomCommon.IServices;
 using AxinomCommon.Services;
+using ControlPanel.Middleware;
 
 namespace FileLoader
 {
@@ -49,6 +50,8 @@ namespace FileLoader
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.UseMiddleware<AuthMiddleware>("Axinom", "Monixa");
         }
     }
 }

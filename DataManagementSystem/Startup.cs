@@ -1,5 +1,6 @@
 ﻿using AxinomCommon.IServices;
 using AxinomCommon.Services;
+using DataManagementSystem.Filters;
 using DataManagementSystem.IServices;
 using DataManagementSystem.Repositories;
 using DataManagementSystem.Services;
@@ -25,7 +26,10 @@ namespace DataManagementSystem
         public void ConfigureServices(IServiceCollection services)
         {
             // MVC
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services
+                .AddMvc(config => config.Filters.Add(new AuthFilter("Axinom", "Monixa")))
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
 
             // EF
             services.AddEntityFrameworkSqlServer();
