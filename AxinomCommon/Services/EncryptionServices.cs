@@ -56,7 +56,7 @@ namespace AxinomCommon.Services
                 Array.Copy(encrypted, 0, combinedIvCt, IV.Length, encrypted.Length);
             }
 
-            return System.Text.Encoding.UTF8.GetString(combinedIvCt);
+            return System.Convert.ToBase64String(combinedIvCt);
         }
         public string EncryptToString(byte[] bytes)
         {
@@ -90,7 +90,7 @@ namespace AxinomCommon.Services
                 Array.Copy(encrypted, 0, combinedIvCt, IV.Length, encrypted.Length);
             }
 
-            return System.Text.Encoding.UTF8.GetString(combinedIvCt);
+            return System.Convert.ToBase64String(combinedIvCt);
         }
 
 
@@ -98,7 +98,7 @@ namespace AxinomCommon.Services
         {
             if (string.IsNullOrEmpty(encryptedText)) return string.Empty;
             string plaintext = null;
-            byte[] encryptedTextAsArray = System.Text.Encoding.UTF8.GetBytes(encryptedText);
+            byte[] encryptedTextAsArray = Convert.FromBase64String(encryptedText);
 
             using (Aes aes = Aes.Create())
             {
