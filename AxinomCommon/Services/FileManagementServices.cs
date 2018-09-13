@@ -76,7 +76,7 @@ namespace AxinomCommon.Services
             return newFile;
         }
 
-        public void StoreFilesAsync(IEnumerable<FileNode> fileNodes)
+        public void StoreFilesAsync(IEnumerable<FileNode> fileNodes, string treatmentDate)
         {            
             foreach (var fileNode in fileNodes)
             {
@@ -85,7 +85,7 @@ namespace AxinomCommon.Services
                 if (string.IsNullOrEmpty(fileNode.RelativePath)) _logger.LogError($"warning there is an empty path for file {fileNode.FileName}, this shouldnt happen");
                 if (fileNode.FileBytes.Length == 0) _logger.LogError($"warning there is an empty file content for {fileNode.FileName}, this shouldnt happen");
 
-                string treatmentDate = DateTime.UtcNow.ToString("yyyyMMdd-Hmmss"); // as in ControlPanel with the zips, store in a dedicated folder based on date
+                 // as in ControlPanel with the zips, store in a dedicated folder based on date
                 string fullpath = $"{_rootFolder}{_fileSeparator}{_destinyFolder}{_fileSeparator}{treatmentDate}{fileNode.RelativePath}";
                 Directory.CreateDirectory(fullpath);
                 File.WriteAllBytes($"{fullpath}{fileNode.FileName}", fileNode.FileBytes);

@@ -13,13 +13,13 @@ namespace DataManagementSystem.Services
             _dbcontext = dbcontext;
         }
 
-        public async void Insert(IEnumerable<DbFileNode> dbFileNodes)
+        public void Insert(IEnumerable<DbFileNode> dbFileNodes)
         {
             foreach(var dbFileNode in dbFileNodes)
             {
-                await _dbcontext.AddAsync(dbFileNode);
+                _dbcontext.Add(dbFileNode);
             }
-            await _dbcontext.SaveChangesAsync();
+            _dbcontext.SaveChanges();
         }
     }
 }

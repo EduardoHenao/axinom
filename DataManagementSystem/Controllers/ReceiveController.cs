@@ -4,6 +4,7 @@ using DataManagementSystem.Business;
 using DataManagementSystem.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 
 namespace DataManagementSystem.Controllers
@@ -39,14 +40,21 @@ namespace DataManagementSystem.Controllers
             // gather variables
             var fileSeparator = _fileManagementServices.GetFileSeparator();
 
-            // get file nodes (decrypts inside)
+            // get file nodes (by processing json and decrypting encrypted fields)
             var fileNodes = FileNode.ExtractFromJsonNode(_encryptionServices, tree, fileSeparator);
 
             // save files to local disk
-            _fileManagementServices.StoreFilesAsync(fileNodes);
+            string treatmentDate = DateTime.UtcNow.ToString("yyyyMMdd-Hmmss");
+            _fileManagementServices.StoreFilesAsync(fileNodes, treatmentDate);
 
-            // persist files
-            _persistenceServices.Insert(fileNodes.Select(x => x.ToDbFileNode()));
+            //convert FileNodes to DbFileNodes
+            var dbFileNodes = fileNodes.Select(x => x.ToDbFileNode(treatmentDate, _fileManagementServices.GetFileSeparator()));
+
+            //inject treatment date folder (see how the above call _fileManagementServices.StoreFilesAsync works)
+            dbFileNodes.Select(x => x.InjectTreatmentDateToRelativePath(treatmentDate, _fileManagementServices.GetFileSeparator()));
+
+            // persist files in db
+            _persistenceServices.Insert(dbFileNodes);
 
             return Ok();
         }

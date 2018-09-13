@@ -9,7 +9,7 @@ namespace AxinomCommon.IServices
     public interface IFileManagementServices
     {
         Task<FileManagementResult> StoreFilesAsync(IFormFile file);
-        void StoreFilesAsync(IEnumerable<FileNode> fileNodes);
+        void StoreFilesAsync(IEnumerable<FileNode> fileNodes, string treatmentDate);
         string GetFilesPath();
         string GetUnzipPath();
         string GetFileSeparator();
