@@ -1,4 +1,4 @@
-﻿namespace FileLoader.Business
+﻿namespace AxinomCommon.Business
 {
     public class FileManagementResult
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FileLoader.Business
+namespace AxinomCommon.Business
 {
     public class JsonNode
     {

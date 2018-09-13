@@ -2,7 +2,7 @@
 using System.IO;
 using AxinomCommon.IServices;
 
-namespace FileLoader.Business
+namespace AxinomCommon.Business
 {
     public class NodeCollection : Dictionary<string, Node>
     {

@@ -1,6 +1,6 @@
-﻿using FileLoader.Business;
+﻿using AxinomCommon.Business;
 
-namespace FileLoader.IServices
+namespace AxinomCommon.IServices
 {
     public interface IZipServices
     {

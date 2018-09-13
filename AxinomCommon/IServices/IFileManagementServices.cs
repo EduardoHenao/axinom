@@ -1,8 +1,8 @@
-﻿using FileLoader.Business;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using AxinomCommon.Business;
 
-namespace FileLoader.IServices
+namespace AxinomCommon.IServices
 {
     public interface IFileManagementServices
     {

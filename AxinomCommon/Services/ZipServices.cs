@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using System.IO.Compression;
-using FileLoader.Business;
-using FileLoader.IServices;
+using AxinomCommon.Business;
+using AxinomCommon.IServices;
 
-namespace FileLoader.Services
+namespace AxinomCommon.Services
 {
     public class ZipServices : IZipServices
     {
