@@ -34,6 +34,9 @@ namespace DataManagementSystem.Controllers
             //get file nodes (decrypts inside)
             var fileNodes = FileNode.ExtractFromJsonNode(_encryptionServices, tree, fileSeparator);
 
+            //save files to local disk
+            _fileManagementServices.StoreFilesAsync(fileNodes);
+
             return Ok();
         }
     }
