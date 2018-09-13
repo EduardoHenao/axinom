@@ -1,6 +1,7 @@
 ﻿using AxinomCommon.IServices;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 
@@ -9,12 +10,14 @@ namespace AxinomCommon.Services
     public class EncryptionServices : IEncryptionServices
     {
         private readonly byte[] _encriptionKey;
-        private const string _defaultEncriptionKey = "001C2233A455667C";
+        private const string DefaultEncriptionKey = "001C2233A455667C";
+        private const CipherMode CipherMode = System.Security.Cryptography.CipherMode.ECB;
+        private const PaddingMode Padding = PaddingMode.PKCS7;
 
         public EncryptionServices(IConfiguration configuration)
         {
             var confKey = configuration["EncryptionKey"];
-            string encriptionKeyAsString = string.IsNullOrEmpty(confKey) ? _defaultEncriptionKey : confKey; // if  not in conf, defautl 'default key'
+            string encriptionKeyAsString = string.IsNullOrEmpty(confKey) ? DefaultEncriptionKey : confKey; // if  not in conf, defautl 'default key'
             _encriptionKey = System.Text.Encoding.UTF8.GetBytes(encriptionKeyAsString);
         }
 
@@ -27,7 +30,9 @@ namespace AxinomCommon.Services
             using (Aes aes = Aes.Create())
             {
                 aes.Key = _encriptionKey;
-                aes.Mode = CipherMode.ECB;
+                aes.Mode = CipherMode;
+                aes.BlockSize = 128;
+                aes.Padding = Padding;
 
                 aes.GenerateIV();
                 IV = aes.IV;// store initialization vector
@@ -62,7 +67,9 @@ namespace AxinomCommon.Services
             using (Aes aes = Aes.Create())
             {
                 aes.Key = _encriptionKey;
-                aes.Mode = CipherMode.ECB;
+                aes.Mode = CipherMode;
+                aes.BlockSize = 128;
+                aes.Padding = Padding;
 
                 aes.GenerateIV();
                 IV = aes.IV;// store initialization vector
@@ -89,13 +96,16 @@ namespace AxinomCommon.Services
 
         public string DecryptToString(string encryptedText)
         {
+            if (string.IsNullOrEmpty(encryptedText)) return string.Empty;
             string plaintext = null;
             byte[] encryptedTextAsArray = System.Text.Encoding.UTF8.GetBytes(encryptedText);
 
             using (Aes aes = Aes.Create())
             {
                 aes.Key = _encriptionKey;
-                aes.Mode = CipherMode.ECB;
+                aes.Mode = CipherMode;
+                aes.BlockSize = 128;
+                aes.Padding = Padding;
 
                 byte[] IV = new byte[aes.BlockSize / 8];
                 byte[] cipherText = new byte[encryptedTextAsArray.Length - IV.Length];
@@ -120,6 +130,11 @@ namespace AxinomCommon.Services
             }
 
             return plaintext;
+        }
+
+        public byte[] DecryptToBytes(string encryptedText)
+        {
+            return new byte[1];
         }
     }
 }
