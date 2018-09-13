@@ -23,6 +23,7 @@ namespace AxinomCommon.Services
 
         public string EncryptToString(string plainText)
         {
+            if (string.IsNullOrEmpty(plainText)) return string.Empty;
             byte[] encrypted;
             byte[] IV; // initialization vector
             byte[] combinedIvCt;
@@ -56,10 +57,12 @@ namespace AxinomCommon.Services
                 Array.Copy(encrypted, 0, combinedIvCt, IV.Length, encrypted.Length);
             }
 
-            return System.Convert.ToBase64String(combinedIvCt);
+            string base64 = System.Convert.ToBase64String(combinedIvCt);
+            return base64;
         }
         public string EncryptToString(byte[] bytes)
         {
+            if (bytes.Length == 0) return string.Empty;
             byte[] encrypted;
             byte[] IV; // initialization vector
             byte[] combinedIvCt;
@@ -81,6 +84,7 @@ namespace AxinomCommon.Services
                     using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
                     {
                         cryptoStream.Write(bytes, 0, bytes.Length);
+                        cryptoStream.FlushFinalBlock();
                         encrypted = memoryStream.ToArray();
                     }
                 }
@@ -90,7 +94,8 @@ namespace AxinomCommon.Services
                 Array.Copy(encrypted, 0, combinedIvCt, IV.Length, encrypted.Length);
             }
 
-            return System.Convert.ToBase64String(combinedIvCt);
+            string base64 = System.Convert.ToBase64String(combinedIvCt);
+            return base64;
         }
 
 
@@ -117,13 +122,13 @@ namespace AxinomCommon.Services
 
                 ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
-                using (var msDecrypt = new MemoryStream(cipherText))
+                using (var memoryStream = new MemoryStream(cipherText))
                 {
-                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read))
                     {
-                        using (var srDecrypt = new StreamReader(csDecrypt))
+                        using (var streamReader = new StreamReader(cryptoStream))
                         {
-                            plaintext = srDecrypt.ReadToEnd();
+                            plaintext = streamReader.ReadToEnd();
                         }
                     }
                 }
@@ -134,7 +139,36 @@ namespace AxinomCommon.Services
 
         public byte[] DecryptToBytes(string encryptedText)
         {
-            return new byte[1];
+            if (string.IsNullOrEmpty(encryptedText)) return null;
+            byte[] encryptedTextAsArray = Convert.FromBase64String(encryptedText);
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = _encriptionKey;
+                aes.Mode = CipherMode;
+                aes.BlockSize = 128;
+                aes.Padding = Padding;
+
+                byte[] IV = new byte[aes.BlockSize / 8];
+                byte[] cipherText = new byte[encryptedTextAsArray.Length - IV.Length];
+
+                Array.Copy(encryptedTextAsArray, IV, IV.Length);
+                Array.Copy(encryptedTextAsArray, IV.Length, cipherText, 0, cipherText.Length);
+
+                aes.IV = IV;
+
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Write))
+                    {
+                        cryptoStream.Write(cipherText, 0, cipherText.Length);
+                        cryptoStream.FlushFinalBlock();
+                        return memoryStream.ToArray();
+                    }
+                }
+            }
         }
     }
 }
