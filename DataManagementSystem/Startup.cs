@@ -15,26 +15,26 @@ namespace DataManagementSystem
 {
     public class Startup
     {
+        private IConfiguration _configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             // MVC
             services
-                .AddMvc(config => config.Filters.Add(new AuthFilter("Axinom", "Monixa")))
+                .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
 
             // EF
             services.AddEntityFrameworkSqlServer();
             services.AddDbContext<DataManagementSystemContext>(
-                options => options.UseSqlServer(Configuration["ConnectionString"], providerOptions => providerOptions.CommandTimeout(60)));
+                options => options.UseSqlServer(_configuration["ConnectionString"], providerOptions => providerOptions.CommandTimeout(60)));
 
             // services injection
             services.AddTransient<IFileManagementServices, FileManagementServices>();

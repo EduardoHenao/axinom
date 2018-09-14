@@ -6,23 +6,25 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AxinomCommon.IServices;
 using AxinomCommon.Services;
-using ControlPanel.Middleware;
 
 namespace FileLoader
 {
     public class Startup
     {
+        private IConfiguration _configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // MVC
             services.AddMvc();
+
+            // services injection
             services.AddTransient<IFileManagementServices, FileManagementServices>();
             services.AddTransient<IZipServices, ZipServices>();
             services.AddTransient<IEncryptionServices, EncryptionServices>();
@@ -50,8 +52,6 @@ namespace FileLoader
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            app.UseMiddleware<AuthMiddleware>("Axinom", "Monixa");
         }
     }
 }

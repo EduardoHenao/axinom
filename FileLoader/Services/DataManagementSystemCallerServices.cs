@@ -12,6 +12,7 @@ namespace FileLoader.Services
     public class DataManagementSystemCallerServices : IDataManagementSystemCallerServices
     {
         private HttpClient client = new HttpClient();
+        private const string SecurityFieldName = "Authorization";
 
         public DataManagementSystemCallerServices()
         {
@@ -20,10 +21,13 @@ namespace FileLoader.Services
                 new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<bool> PostAsync(string jsonString)
+        public async Task<bool> PostAsync(string jsonString, string user, string password)
         {
-            await Task.Delay(500); // delay 500 ms for cancelation token to work
+            await Task.Delay(500); // delay 500 ms for cancelling token to work
             CancellationToken.None.ThrowIfCancellationRequested();
+
+            //inject security header
+            client.DefaultRequestHeaders.Add(SecurityFieldName, $"{user} {password}");
 
             HttpResponseMessage response = await client.PostAsync("api/receive", new StringContent(jsonString, Encoding.UTF8, "application/json"));
             if (!response.IsSuccessStatusCode) return false;

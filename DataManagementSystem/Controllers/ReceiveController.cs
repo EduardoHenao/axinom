@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using DataManagementSystem.Filters;
 
 namespace DataManagementSystem.Controllers
 {
@@ -33,9 +34,10 @@ namespace DataManagementSystem.Controllers
 
         // POST api/values
         [HttpPost]
-        public IActionResult Post([FromBody] JsonNode tree)
+        [TypeFilter(typeof(VerifyAuthFilter), IsReusable = true)]
+        public IActionResult Post([FromBody] JsonNode tree, bool authorized)
         {
-            if (tree == null) return BadRequest();
+            if (tree == null || !authorized) return BadRequest();
 
             // gather variables
             var fileSeparator = _fileManagementServices.GetFileSeparator();

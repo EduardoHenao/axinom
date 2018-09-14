@@ -11,6 +11,10 @@ from "Package Manager Console" inside visual studio
 cd DataManagementSystem
 update-database
 --------------------------------------------------------------------------------------------------------------------------------------------
+use master
+
+create database AxinomDB
+
 USE [AxinomDB]
 GO
 
@@ -34,3 +38,5 @@ CREATE TABLE [dbo].[DbFileNodes](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 --------------------------------------------------------------------------------------------------------------------------------------------
+
+select* from [AxinomDB].[dbo].DbFileNodes

@@ -15,18 +15,36 @@ namespace FileLoader.Controllers
         private readonly IZipServices _zipServices;
         private readonly IEncryptionServices _encryptionServices;
         private readonly IDataManagementSystemCallerServices _dataManagementSystemCallerServices;
+        private readonly IConfiguration _configuration;
+
+        // conf and defautl conf values
+        private const string _userFieldName = "User";
+        private readonly string _user;
+        private const string _defaultUser = "Axinom";
+
+        private const string _passwordFieldName = "Password";
+        private readonly string _password;
+        private const string _defaultPassword = "Monixa";
 
         public UploadFilesController(
-            IConfiguration configuration, 
             IFileManagementServices fileManagementServices, 
             IZipServices zipServices, 
             IEncryptionServices encryptionServices,
-            IDataManagementSystemCallerServices dataManagementSystemCallerServices)
+            IDataManagementSystemCallerServices dataManagementSystemCallerServices,
+            IConfiguration configuration)
         {
             _fileManagementServices = fileManagementServices;
             _zipServices = zipServices;
             _encryptionServices = encryptionServices;
             _dataManagementSystemCallerServices = dataManagementSystemCallerServices;
+            _configuration = configuration;
+
+            
+            var user = configuration[_userFieldName];
+            _user = string.IsNullOrEmpty(user) ? _defaultUser : user;
+
+            var password = configuration[_passwordFieldName];
+            _password = string.IsNullOrEmpty(password) ? _defaultPassword : password;
         }
 
         [HttpPost("UploadFiles")]
@@ -58,12 +76,11 @@ namespace FileLoader.Controllers
                         _fileManagementServices.GetFileSeparator());
                     string jsonString = JsonConvert.SerializeObject(root);
 
-                    var result = await _dataManagementSystemCallerServices.PostAsync(jsonString);
+                    await _dataManagementSystemCallerServices.PostAsync(jsonString, _user, _password);
 
                     return Ok(jsonString);
                 }
             }
-
             return RedirectToAction("Index", "Home");
         }
     }
