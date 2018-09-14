@@ -22,35 +22,42 @@ namespace AxinomCommon.Services
     {
         private readonly string _rootFolder;
 
+        private const string _storageFolderFieldName = "StorageFolder";
         private readonly string _storageFolder;
         private const string _defaultStorageFolder = "_uploadedFiles";
 
+        private const string _unzipFolderFieldName = "UnzipFolder";
         private readonly string _unzipFolder;
         private const string _defaultUnzipFolder = "_unzippedFiles";
 
+        private const string _destinyFolderFieldName = "DestinyFolder";
         private readonly string _destinyFolder;
         private const string _defaultDestinyFolder = "_destinyFiles";
 
+        private const string _fileSeparatorFieldName = "FileSeparator";
         private readonly string _fileSeparator;
         private const string _defaultFileSeparator = "\\";
 
         private readonly ILogger _logger;
 
-        public FileManagementServices(IHostingEnvironment env, IConfiguration configuration, ILogger<FileManagementServices> logger)
+        public FileManagementServices(
+            IHostingEnvironment env, 
+            IConfiguration configuration, 
+            ILogger<FileManagementServices> logger)
         {
             //file separator
-            var fileSeparator = configuration["FileSeparator"];
+            var fileSeparator = configuration[_fileSeparatorFieldName];
             _fileSeparator = string.IsNullOrEmpty(fileSeparator) ? _defaultFileSeparator : fileSeparator; // if  not in conf, defautl 'default key'
 
             //uploaded files directory
-            var storageFolder = configuration["StorageFolder"];
+            var storageFolder = configuration[_storageFolderFieldName];
             _storageFolder = string.IsNullOrEmpty(storageFolder) ? _defaultStorageFolder : storageFolder;
 
             //unzip files directory
-            var unzipFolder = configuration["UnzipFolder"];
+            var unzipFolder = configuration[_unzipFolderFieldName];
             _unzipFolder = string.IsNullOrEmpty(unzipFolder) ? _defaultUnzipFolder : unzipFolder;
 
-            var destinyFolder = configuration["DestinyFolder"];
+            var destinyFolder = configuration[_destinyFolderFieldName];
             _destinyFolder = string.IsNullOrEmpty(destinyFolder) ? _defaultDestinyFolder : destinyFolder;
 
             _rootFolder = env.ContentRootPath;

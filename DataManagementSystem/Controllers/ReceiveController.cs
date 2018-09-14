@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using DataManagementSystem.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace DataManagementSystem.Controllers
 {
@@ -25,16 +26,28 @@ namespace DataManagementSystem.Controllers
         private readonly IFileManagementServices _fileManagementServices;
         private readonly IPersistenceServices _persistenceServices;
 
+        private const string _persistFilesFieldName = "PersistFiles";
+        private readonly bool _persistFiles;
+        private const string _defaultPersistFiles = "False";
+
+        private readonly IConfiguration _configuration;
+
         public ReceiveController(
             IEncryptionServices encryptionServices, 
             IZipServices zipServices, 
             IFileManagementServices fileManagementServices, 
-            IPersistenceServices persistenceServices)
+            IPersistenceServices persistenceServices,
+            IConfiguration configuration)
         {
             _encryptionServices = encryptionServices;
             _zipServices = zipServices;
             _fileManagementServices = fileManagementServices;
             _persistenceServices = persistenceServices;
+            _configuration = configuration;
+
+            var persistFiles = configuration[_persistFilesFieldName];
+            persistFiles = string.IsNullOrEmpty(persistFiles) ? _defaultPersistFiles : persistFiles; // if  not in conf, defautl 'default key'
+            _persistFiles = bool.Parse(persistFiles);
         }
 
         // POST api/values
@@ -61,7 +74,7 @@ namespace DataManagementSystem.Controllers
             dbFileNodes.Select(x => x.InjectTreatmentDateToRelativePath(treatmentDate, _fileManagementServices.GetFileSeparator()));
 
             // persist files in db
-            _persistenceServices.Insert(dbFileNodes);
+            if(_persistFiles) _persistenceServices.Insert(dbFileNodes);
 
             return Ok();
         }
