@@ -3,6 +3,7 @@ using FileLoader.Models;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,24 +24,31 @@ namespace FileLoader.Services
 
         public async Task<bool> PostAsync(string remoteUrl, string jsonString, string encryptedUser, string encryptedPassword)
         {
+            // cancelation token
+            await Task.Delay(500); // delay 500 ms for cancelling token to work
+            CancellationToken.None.ThrowIfCancellationRequested();
+
             // configure client object
             HttpClient client = new HttpClient();
             client.BaseAddress = new System.Uri(remoteUrl);
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.TryAddWithoutValidation(SecurityFieldName, $"{encryptedUser} {encryptedPassword}");//inject security header
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.TryAddWithoutValidation(SecurityFieldName, $"{encryptedUser} {encryptedPassword}"); // inject security header
 
             // post
-            await Task.Delay(500); // delay 500 ms for cancelling token to work
-            CancellationToken.None.ThrowIfCancellationRequested();
-            HttpResponseMessage response = await client.PostAsync("api/receive", new StringContent(jsonString, Encoding.UTF8, "application/json"));
-            if (!response.IsSuccessStatusCode) return false;
+            HttpResponseMessage response;
+            try
+            {
+                response = await client.PostAsync("api/receive", new StringContent(jsonString, Encoding.UTF8, "application/json"));
+            }
+            catch (HttpRequestException e)
+            {
+                // yeah i know i should inquire about the excetion, but that maybe when u guys hire me ;)
+                return false;
+            }
 
             // manage answer
-            var stringResult = await response.Content.ReadAsStringAsync();
-            var answer = JsonConvert.DeserializeObject<DataManagementSystemAnswerModel>(stringResult);
-            if (answer == null) return false;
-            return answer.Ok;
+            if (response != null && !response.IsSuccessStatusCode) return false;
+            return true;
         }
     }
 }

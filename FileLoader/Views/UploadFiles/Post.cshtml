@@ -1,0 +1,40 @@
+﻿@model ControlPanel.Models.PostModel
+<div>
+    <div class="row">
+        <div class="col-md-10">
+            @Html.ActionLink("Back to home ....", "Index", "Home")
+        </div>
+    </div>
+    @if (Model.HasError)
+    {
+        <div class="row">
+            <div class="col-md-10" style="font-size: 30px; color: darkred">
+                ERROR
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10">
+                @Model.ErrorMessage
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-10">
+                @Model.AnswerComment
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10">
+                "JsonSent"
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10">
+                @Html.TextAreaFor(m => m.JsonString, new { rows = 40, columns = 40 })
+            </div>
+        </div>
+    }
+
+</div>

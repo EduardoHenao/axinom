@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
 using FileLoader.IServices;
 using AxinomCommon.IServices;
+using ControlPanel.Models;
 
 namespace FileLoader.Controllers
 {
@@ -20,6 +21,10 @@ namespace FileLoader.Controllers
         private readonly IEncryptionServices _encryptionServices;
         private readonly IDataManagementSystemCallerServices _dataManagementSystemCallerServices;
 
+        private const string _fileManagementServiceUrlFieldName = "FileManagementServiceUrl";
+        private const string _defaultFileManagementServiceUrl = "http://localhost:5000";
+        private readonly string _fileManagementServiceUrl;
+
         public UploadFilesController(
             IFileManagementServices fileManagementServices, 
             IZipServices zipServices, 
@@ -31,12 +36,20 @@ namespace FileLoader.Controllers
             _zipServices = zipServices;
             _encryptionServices = encryptionServices;
             _dataManagementSystemCallerServices = dataManagementSystemCallerServices;
+
+            //get constants from conf
+            var defaultFileManagementServiceUrl = configuration[_fileManagementServiceUrlFieldName];
+            _fileManagementServiceUrl = string.IsNullOrEmpty(defaultFileManagementServiceUrl) ? _defaultFileManagementServiceUrl : defaultFileManagementServiceUrl;
         }
 
         [HttpPost("UploadFiles")]
         public async Task<IActionResult> Post(IFormFile formFile, string user, string password)
         {
-            if (formFile != null && !string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(password))
+            if (formFile == null || string.IsNullOrEmpty(user) || string.IsNullOrEmpty(password))
+            {
+                return View(new PostModel { ErrorMessage = "Please provide a correct user, password and zip file", HasError = true });
+            }
+            else
             {
                 //ensure store directory
                 _fileManagementServices.EnsureStoreDirectory();
@@ -67,21 +80,22 @@ namespace FileLoader.Controllers
                     string jsonString = JsonConvert.SerializeObject(root);
 
                     // call the DataManagement System API
-                    await _dataManagementSystemCallerServices.PostAsync(
-                        "http://localhost:5000",
+                    var response = await _dataManagementSystemCallerServices.PostAsync(
+                        _fileManagementServiceUrl,
                         jsonString,
                         _encryptionServices.EncryptToString(user),
                         _encryptionServices.EncryptToString(password));
 
                     // visualized the sent json string
-                    return Ok(jsonString);
+                    if (!response) return View(new PostModel { ErrorMessage = "The Data Management system answer was negative", HasError = true });
+
+                    return View(new PostModel { JsonString = jsonString, AnswerComment = "Json accepted by Data Management Service", HasError = false });
                 }
                 else
                 {
-                    //todo: maybe return a partial view with information?
+                    return View(new PostModel { ErrorMessage = "Error Storing zip file", HasError = true });
                 }
             }
-            return RedirectToAction("Index", "Home");
         }
     }
 }
