@@ -15,16 +15,6 @@ namespace FileLoader.Controllers
         private readonly IZipServices _zipServices;
         private readonly IEncryptionServices _encryptionServices;
         private readonly IDataManagementSystemCallerServices _dataManagementSystemCallerServices;
-        private readonly IConfiguration _configuration;
-
-        // conf and defautl conf values
-        private const string _userFieldName = "User";
-        private readonly string _user;
-        private const string _defaultUser = "Axinom";
-
-        private const string _passwordFieldName = "Password";
-        private readonly string _password;
-        private const string _defaultPassword = "Monixa";
 
         public UploadFilesController(
             IFileManagementServices fileManagementServices, 
@@ -37,20 +27,12 @@ namespace FileLoader.Controllers
             _zipServices = zipServices;
             _encryptionServices = encryptionServices;
             _dataManagementSystemCallerServices = dataManagementSystemCallerServices;
-            _configuration = configuration;
-
-            
-            var user = configuration[_userFieldName];
-            _user = string.IsNullOrEmpty(user) ? _defaultUser : user;
-
-            var password = configuration[_passwordFieldName];
-            _password = string.IsNullOrEmpty(password) ? _defaultPassword : password;
         }
 
         [HttpPost("UploadFiles")]
-        public async Task<IActionResult> Post(IFormFile formFile)
+        public async Task<IActionResult> Post(IFormFile formFile, string user, string password)
         {
-            if (formFile != null)
+            if (formFile != null && !string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(password))
             {
                 //ensure store directory
                 _fileManagementServices.EnsureStoreDirectory();
@@ -76,7 +58,10 @@ namespace FileLoader.Controllers
                         _fileManagementServices.GetFileSeparator());
                     string jsonString = JsonConvert.SerializeObject(root);
 
-                    await _dataManagementSystemCallerServices.PostAsync(jsonString, _user, _password);
+                    await _dataManagementSystemCallerServices.PostAsync(
+                        jsonString,
+                        _encryptionServices.EncryptToString(user),
+                        _encryptionServices.EncryptToString(password));
 
                     return Ok(jsonString);
                 }

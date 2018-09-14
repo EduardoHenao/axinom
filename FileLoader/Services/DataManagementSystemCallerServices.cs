@@ -21,13 +21,13 @@ namespace FileLoader.Services
                 new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
-        public async Task<bool> PostAsync(string jsonString, string user, string password)
+        public async Task<bool> PostAsync(string jsonString, string encryptedUser, string encryptedPassword)
         {
             await Task.Delay(500); // delay 500 ms for cancelling token to work
             CancellationToken.None.ThrowIfCancellationRequested();
 
             //inject security header
-            client.DefaultRequestHeaders.Add(SecurityFieldName, $"{user} {password}");
+            client.DefaultRequestHeaders.TryAddWithoutValidation(SecurityFieldName, $"{encryptedUser} {encryptedPassword}");
 
             HttpResponseMessage response = await client.PostAsync("api/receive", new StringContent(jsonString, Encoding.UTF8, "application/json"));
             if (!response.IsSuccessStatusCode) return false;

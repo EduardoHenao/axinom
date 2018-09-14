@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using AxinomCommon.IServices;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 
 namespace DataManagementSystem.Filters
@@ -16,8 +17,11 @@ namespace DataManagementSystem.Filters
 
         private const string AuthorizationParameterName = "authorized";
 
-        public VerifyAuthFilter(IConfiguration configuration)
+        private readonly IEncryptionServices _encryptionServices;
+
+        public VerifyAuthFilter(IConfiguration configuration, IEncryptionServices encryptionServices)
         {
+            _encryptionServices = encryptionServices;
             var user = configuration[_userFieldName];
             _user = string.IsNullOrEmpty(user) ? _defaultUser : user;
 
@@ -35,9 +39,18 @@ namespace DataManagementSystem.Filters
             var parts = authHeader.Split(' ', 2);
             if (parts.Length != 2) authorized = false; //idem
 
-            var user = parts[0];
-            var password = parts[1];
-            if(user != _user || password != _password) authorized = false; //idem
+            string encryptedUser = parts[0];
+            string encryptedPassword = parts[1];
+
+            if (string.IsNullOrEmpty(encryptedPassword) || string.IsNullOrEmpty(encryptedUser)) authorized = false;
+
+            string user = _encryptionServices.DecryptToString(encryptedUser);
+            string password = _encryptionServices.DecryptToString(encryptedPassword);
+
+            if(string.IsNullOrEmpty(user) ||
+               user != _user ||
+               string.IsNullOrEmpty(password) ||
+               password != _password) authorized = false; //idem
 
             context.ActionArguments[AuthorizationParameterName] = authorized;
         }

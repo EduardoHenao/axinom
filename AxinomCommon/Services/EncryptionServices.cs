@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace AxinomCommon.Services
 {
@@ -17,7 +18,7 @@ namespace AxinomCommon.Services
         public EncryptionServices(IConfiguration configuration)
         {
             var confKey = configuration["EncryptionKey"];
-            string encriptionKeyAsString = string.IsNullOrEmpty(confKey) ? DefaultEncriptionKey : confKey; // if  not in conf, defautl 'default key'
+            string encriptionKeyAsString = string.IsNullOrEmpty(confKey) ? DefaultEncriptionKey : confKey; // if  not in conf use DefaultEncriptionKey
             _encriptionKey = System.Text.Encoding.UTF8.GetBytes(encriptionKeyAsString);
         }
 
@@ -60,6 +61,7 @@ namespace AxinomCommon.Services
             string base64 = System.Convert.ToBase64String(combinedIvCt);
             return base64;
         }
+
         public string EncryptToString(byte[] bytes)
         {
             if (bytes.Length == 0) return string.Empty;
