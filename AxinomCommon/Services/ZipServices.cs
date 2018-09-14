@@ -5,12 +5,14 @@ using AxinomCommon.IServices;
 
 namespace AxinomCommon.Services
 {
+    /*
+     * This class is used by the control panel to handle zip files
+     */
     public class ZipServices : IZipServices
     {
-        public ZipServices()
-        {
-        }
-
+        /*
+         * gets a path and generates the node collection (the first kind of node in the chain)
+         */
         public NodeCollection GetFileAndFolderStructureAsync(string filePath)
         {
             NodeCollection nodeCollection = new NodeCollection();
@@ -26,6 +28,9 @@ namespace AxinomCommon.Services
             return nodeCollection;
         }
 
+        /*
+         * method to unzip a zip file
+         */
         public void UnzipFiles(FileManagementResult fileManagementResult, string destinationPath, string fileSeparator)
         {
 
@@ -33,7 +38,7 @@ namespace AxinomCommon.Services
             {
                 foreach (ZipArchiveEntry entry in zipFile.Entries)
                 {
-                    var filePath = $"{destinationPath}{fileSeparator}{CorrectFileSeparator(entry.FullName, fileSeparator)}";
+                    var filePath = $"{destinationPath}{fileSeparator}{FileManagementServices.CorrectFileSeparator(entry.FullName, fileSeparator)}";
                     var lastIndexOfFileSeparator = filePath.LastIndexOf(fileSeparator);
                     if (lastIndexOfFileSeparator != -1)
                     {
@@ -44,16 +49,5 @@ namespace AxinomCommon.Services
                 }
             }
         }
-
-        private string CorrectFileSeparator(string fullPath, string fileSeparator)
-        {
-            if (fileSeparator == "/")
-            {
-                return fullPath.Replace("\\", "/");
-            }
-
-            return fullPath.Replace("/", "\\");
-        }
-
     }
 }

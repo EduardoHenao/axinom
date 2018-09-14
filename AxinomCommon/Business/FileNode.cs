@@ -4,6 +4,25 @@ using AxinomCommon.IServices;
 
 namespace DataManagementSystem.Business
 {
+    /* 
+     * this class is used in the Data Management system.
+     * The data management system will parse the json into a JsonNode containing the encrypted tree structure.
+     * This class will take the JsonNode tree object and some other information to generate the actual
+     * decrypted file structure inside the data management system (represented by this class)
+     * 
+     * JsonNode.Folder "/"
+     * |
+     * |->JsonNode.Folder "c"
+     * |           |
+     * |           |- JsonNode.File "b.txt"
+     * |
+     * |- JsonNode.File "a.txt"
+     * 
+     * will convert to:
+     * 
+     * Filenode 1: /c/b.txt
+     * Filenode 2: /a.txt
+     */
     public class FileNode
     {
         public string RelativePath { get; set; }

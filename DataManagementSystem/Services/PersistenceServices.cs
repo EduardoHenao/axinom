@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace DataManagementSystem.Services
 {
+    /*
+     * a service to handle DbFileNode entities to be persisted
+     */
     public class PersistenceServices : IPersistenceServices
     {
         private readonly DataManagementSystemContext _dbcontext;

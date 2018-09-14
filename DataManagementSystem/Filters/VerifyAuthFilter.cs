@@ -4,15 +4,22 @@ using Microsoft.Extensions.Configuration;
 
 namespace DataManagementSystem.Filters
 {
+    /*
+     * To implement the HTTP basic auth in the receiving side (the Data Management System)
+     * I created this filter to be used as an attribute to validate every call done to the post
+     * handling the comming files.
+     */
     public class VerifyAuthFilter : IActionFilter
     {
+        //Yeah! there is a default user password (axinom, 123) 
+        // in case the conf file (appsettings.json) doesn't have it
         private const string _authorizationFieldName = "Authorization";
         private const string _userFieldName = "User";
-        private const string _defaultUser = "Axinom";
+        private const string _defaultUser = "axinom";
         private readonly string _user;
 
         private const string _passwordFieldName = "Password";
-        private const string _defaultPassword = "Monixa";
+        private const string _defaultPassword = "123";
         private readonly string _password;
 
         private const string AuthorizationParameterName = "authorized";
@@ -42,7 +49,7 @@ namespace DataManagementSystem.Filters
             string encryptedUser = parts[0];
             string encryptedPassword = parts[1];
 
-            if (string.IsNullOrEmpty(encryptedPassword) || string.IsNullOrEmpty(encryptedUser)) authorized = false;
+            if (string.IsNullOrEmpty(encryptedPassword) || string.IsNullOrEmpty(encryptedUser)) authorized = false; // idem
 
             string user = _encryptionServices.DecryptToString(encryptedUser);
             string password = _encryptionServices.DecryptToString(encryptedPassword);

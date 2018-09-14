@@ -4,6 +4,9 @@ using FileLoader.Models;
 
 namespace FileLoader.Controllers
 {
+    /**
+     * this class is here only to show the view for the Control panel 
+     */
     public class HomeController : Controller
     {
         public IActionResult Index()

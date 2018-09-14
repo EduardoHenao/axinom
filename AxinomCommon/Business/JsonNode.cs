@@ -2,6 +2,10 @@
 
 namespace AxinomCommon.Business
 {
+    /*
+     * This class is common to both the Control Panel and the File Management System
+     * It represents the json containing the tree structure  to be coded and decoded in both sides.
+     */
     public class JsonNode
     {
         public string name { get; set; }

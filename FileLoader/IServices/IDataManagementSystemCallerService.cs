@@ -4,6 +4,6 @@ namespace FileLoader.IServices
 {
     public interface IDataManagementSystemCallerServices
     {
-        Task<bool> PostAsync(string jsonString, string encryptedUser, string encryptedPassword);
+        Task<bool> PostAsync(string remoteUrl, string jsonString, string encryptedUser, string encryptedPassword);
     }
 }

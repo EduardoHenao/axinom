@@ -4,6 +4,15 @@ using AxinomCommon.IServices;
 
 namespace AxinomCommon.Business
 {
+    /*
+     * This class represents the primordial node produced by the
+     * ZipServices when scanning the original zip provided in the Control Panel.
+     * 
+     * Each entry will be then in here.
+     * You can see this structure as proto version of the JsonNode tree object, without the 
+     * encryption nor the tree structure. With the required data and the encryption service instance
+     * this class transforms into a full formed JsonNode tree object.
+     */
     public class NodeCollection : Dictionary<string, Node>
     {
         public void AddEntry(string entry, int beginIndex)

@@ -9,6 +9,10 @@ using AxinomCommon.IServices;
 
 namespace FileLoader.Controllers
 {
+    /*
+     * Class to handle the data from the view containing the user password and file
+     * all the important stuff for the Control panel happens in the post action
+     */
     public class UploadFilesController : Controller
     {
         private readonly IFileManagementServices _fileManagementServices;
@@ -52,18 +56,29 @@ namespace FileLoader.Controllers
                 if (storedFile.IsStored)
                 {
                     NodeCollection nodes = _zipServices.GetFileAndFolderStructureAsync(storedFile.FileName);
+
+                    // this will generate the json object with all neccessary fields encrypted
                     JsonNode root = nodes.GenerateJsonObject(
                         _encryptionServices, 
                         _fileManagementServices.GetUnzipPath(), 
                         _fileManagementServices.GetFileSeparator());
+
+                    // then generate the json string
                     string jsonString = JsonConvert.SerializeObject(root);
 
+                    // call the DataManagement System API
                     await _dataManagementSystemCallerServices.PostAsync(
+                        "http://localhost:5000",
                         jsonString,
                         _encryptionServices.EncryptToString(user),
                         _encryptionServices.EncryptToString(password));
 
+                    // visualized the sent json string
                     return Ok(jsonString);
+                }
+                else
+                {
+                    //todo: maybe return a partial view with information?
                 }
             }
             return RedirectToAction("Index", "Home");

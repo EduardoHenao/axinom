@@ -1,5 +1,8 @@
 ﻿namespace FileLoader.Models
 {
+    /*
+     * model for the post answer (see UploadFilesController)
+     */
     public class DataManagementSystemAnswerModel
     {
         public bool Ok { get; set; }

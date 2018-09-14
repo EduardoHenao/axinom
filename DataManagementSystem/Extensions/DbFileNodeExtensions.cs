@@ -2,6 +2,9 @@
 
 namespace AxinomCommon.Business
 {
+    /*
+     * Extension class to inject the tratment date sub folder to the path of a DB file node
+     */
     public static class DbFileNodeExtensions
     {
         // here we inject the respective date sub folder

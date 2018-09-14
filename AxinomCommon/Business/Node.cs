@@ -1,5 +1,8 @@
 ﻿namespace AxinomCommon.Business
 {
+    /*
+     * This class represents the primordial node used in the Node Collection class
+     */
     public class Node
     {
         public Node()

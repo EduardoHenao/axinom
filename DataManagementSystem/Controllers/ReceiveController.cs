@@ -10,6 +10,11 @@ using DataManagementSystem.Filters;
 
 namespace DataManagementSystem.Controllers
 {
+    /*
+     * By requirement: and JSON API Controller with 1 call that accepts the encrypted tree file structure
+     * 
+     * if you understand the post method, you understood the whole Data Management System
+     */
     [Route("api/[controller]")]
     [ApiController]
     [AllowAnonymous]

@@ -1,13 +1,15 @@
 ﻿using AxinomCommon.IServices;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace AxinomCommon.Services
 {
+    /*
+     * The sole purpose of this class is to convert strings encrypted in AES 128bit ECB
+     * into either base64 encoded strings or bytes. (and vice-versa)
+     */
     public class EncryptionServices : IEncryptionServices
     {
         private readonly byte[] _encriptionKey;
@@ -22,6 +24,9 @@ namespace AxinomCommon.Services
             _encriptionKey = System.Text.Encoding.UTF8.GetBytes(encriptionKeyAsString);
         }
 
+        /**
+         * encrypts with AES 128 ECB to a base64 string
+         */
         public string EncryptToString(string plainText)
         {
             if (string.IsNullOrEmpty(plainText)) return string.Empty;
@@ -62,6 +67,9 @@ namespace AxinomCommon.Services
             return base64;
         }
 
+        /**
+         * encrypts with AES 128 ECB to bytes
+         */
         public string EncryptToString(byte[] bytes)
         {
             if (bytes.Length == 0) return string.Empty;
@@ -100,7 +108,9 @@ namespace AxinomCommon.Services
             return base64;
         }
 
-
+        /**
+         * decrypts with AES 128 ECB from a base64 string
+         */
         public string DecryptToString(string encryptedText)
         {
             if (string.IsNullOrEmpty(encryptedText)) return string.Empty;
@@ -139,6 +149,9 @@ namespace AxinomCommon.Services
             return plaintext;
         }
 
+        /**
+         * decrypts with AES 128 ECB to bytes
+         */
         public byte[] DecryptToBytes(string encryptedText)
         {
             if (string.IsNullOrEmpty(encryptedText)) return null;

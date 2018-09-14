@@ -2,6 +2,7 @@
 
 namespace DataManagementSystem.Repositories
 {
+    // the EF context
     public class DataManagementSystemContext : DbContext
     {
         // entities

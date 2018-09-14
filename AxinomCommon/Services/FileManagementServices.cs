@@ -9,10 +9,15 @@ using AxinomCommon.IServices;
 using System.Collections.Generic;
 using DataManagementSystem.Business;
 using Microsoft.Extensions.Logging;
-using System.Threading;
 
 namespace AxinomCommon.Services
 {
+    /*
+     * This Service is in charge of file handling.
+     * This Class is common to both the Control Panel and File Management Service
+     * 
+     * It handles the defined file directories in the appsettings json files.
+     */
     public class FileManagementServices : IFileManagementServices
     {
         private readonly string _rootFolder;
@@ -53,6 +58,10 @@ namespace AxinomCommon.Services
             _logger = logger;
         }
 
+        /*
+         * This is the first step: store the zip file sent from the front-end of the control panel
+         * the file will have the current date as differentiator to guarantee filepath uniquenes.
+         */
         public async Task<FileManagementResult> StoreFilesAsync(IFormFile file)
         {
             string destinyPath = GetFilesPath();
@@ -76,6 +85,10 @@ namespace AxinomCommon.Services
             return newFile;
         }
 
+        /*
+         * This class will generate the files contained in the zip
+         * after processing the zip file and obtaining the file nodes with the unzipped bytes
+         */
         public void StoreFilesAsync(IEnumerable<FileNode> fileNodes, string treatmentDate)
         {            
             foreach (var fileNode in fileNodes)
@@ -85,7 +98,7 @@ namespace AxinomCommon.Services
                 if (string.IsNullOrEmpty(fileNode.RelativePath)) _logger.LogError($"warning there is an empty path for file {fileNode.FileName}, this shouldnt happen");
                 if (fileNode.FileBytes.Length == 0) _logger.LogError($"warning there is an empty file content for {fileNode.FileName}, this shouldnt happen");
 
-                 // as in ControlPanel with the zips, store in a dedicated folder based on date
+                // as in ControlPanel with the zips, store in a dedicated folder based on date
                 string fullpath = $"{_rootFolder}{_fileSeparator}{_destinyFolder}{_fileSeparator}{treatmentDate}{fileNode.RelativePath}";
                 Directory.CreateDirectory(fullpath);
                 File.WriteAllBytes($"{fullpath}{fileNode.FileName}", fileNode.FileBytes);
@@ -114,13 +127,25 @@ namespace AxinomCommon.Services
 
         public void EnsureUnzipDirectory()
         {
-            EnsureDirectory(GetUnzipPath());  
+            EnsureDirectory(GetUnzipPath());
         }
 
         private void EnsureDirectory(string path, bool recursive = true)
         {
             if (Directory.Exists(path)) Directory.Delete(path, recursive); // recursively delete directory
             Directory.CreateDirectory(path);
+        }
+
+        // static methods
+
+        public static string CorrectFileSeparator(string fullPath, string fileSeparator)
+        {
+            if (fileSeparator == "/")
+            {
+                return fullPath.Replace("\\", "/");
+            }
+
+            return fullPath.Replace("/", "\\");
         }
     }
 }

@@ -2,6 +2,9 @@
 
 namespace DataManagementSystem.Repositories
 {
+    /*
+     * The EF class to represent a FileNode
+     */
     public class DbFileNode
     {
         public long Id { get; set; }

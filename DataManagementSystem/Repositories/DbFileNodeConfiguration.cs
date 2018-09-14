@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataManagementSystem.Repositories
 {
+    /*
+     * Configuration for a DbFileNode
+     */
     public class DbFileNodeConfiguration : IEntityTypeConfiguration<DbFileNode>
     {
         public void Configure(EntityTypeBuilder<DbFileNode> builder)
