@@ -9,6 +9,7 @@ namespace Tests.ControlPanel.Controllers
 {
     public class HomeControllerTest
     {
+
         [Fact]
         public void HomeController_Index_CorrectCall_ReturnsView()
         {
