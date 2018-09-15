@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <h2>Upload a zip file</h2>
+    <form method="post" enctype="multipart/form-data" asp-controller="UploadFiles" asp-action="Index">
+        <div class="row">
+            <div class="col-md-10">
+                <p>Upload a zip file using this form:</p>
+                <input type="file" name="formFile" accept=".zip" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10">
+                <input type="text" name="user" placeholder="User ..." />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10">
+                <input type="password" name="password" placeholder="Password ..." />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10">
+                <input type="submit" value="Upload" />
+            </div>
+        </div>
+    </form>
+</div>
