@@ -27,6 +27,7 @@ My tools of trade where:
 		NuGet Package Manager   4.6.0
 		NuGet Package Manager in Visual Studio. For more information about NuGet, visit http://docs.nuget.org/.
 
+also my machine is intel 64bits +  windows 10 64bits
 --------------------------------------------------------------------------------------------------------------------------------------------
 Database
 
