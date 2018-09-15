@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace ControlPanel
 {
@@ -7,12 +9,20 @@ namespace ControlPanel
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            var config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("hostsettings.json", optional: true)
+            .AddCommandLine(args)
+            .Build();
+
+            return WebHost.CreateDefaultBuilder(args)
+                    .UseConfiguration(config)
+                    .UseStartup<Startup>();
+        }
     }
 }
