@@ -10,6 +10,17 @@ thanks guys for this exercise, twas fun!
 
 All the points of the exercise were finished. Please dig inside the code to search for it!!!
 
+
+the default user password is "axinom" "123"
+
+the default port for the data management system is 5000
+	to verify the datamanagement system is alive go to http://localhost:5000
+the default port for the control panel is 4000
+	to launch the client in default settings go to http://localhost:4000
+if u change them, then tell the control panel where to call the datamanagementsystem 
+	in ControlPanel/appsettings.json "FileManagementServiceUrl": "http://localhost:5000"
+
+
 --------------------------------------------------------------------------------------------------------------------------------------------
 Zip file 
 	- inside the zip file is the git repo as-is
